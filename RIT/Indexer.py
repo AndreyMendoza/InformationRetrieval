@@ -43,12 +43,12 @@ class Indexer:
         Lee la collecion de documentos a partir de la ruta indicada.
         :return:
         '''
-
+                                                                    # Extrae el nombre de la coleccion
         self.collection['name'] = re.findall(r'[a-zA-Z0-9][a-zA-Z0-9\.]*', self.collection['path'])[-1]
-        subDir = os.listdir(self.collection['path'])
+        subDir = os.listdir(self.collection['path'])                #Obtiene los subdirectorios
         for dir in subDir:
             fileNames = os.listdir(self.collection['path'] + '\\' + dir)
-            self.collection['totalDocs'] += len(fileNames)
+            self.collection['totalDocs'] += len(fileNames)          #Cantidad de documentos
             for fileName in fileNames:
                 match = re.search(r'\w\w*.txt', fileName)
                 if match:
@@ -121,5 +121,5 @@ a = Indexer()
 a.ReadStopwords()
 a.ReadCollection()
 print('Palabras contadas: ', len(a.vocabulary))
-print(a.vocabulary)
+#print(a.vocabulary)
 print('Finalizado!\nDuracion: ', time.clock() - start)
