@@ -22,7 +22,7 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def readStopwords(self):
+    def ReadStopwords(self):
 
         '''
         Lee un archivo y toma cada termino por linea como un stopword y lo guarda en el atributo 'stopwords'.
@@ -37,7 +37,7 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def readCollection(self):
+    def ReadCollection(self):
 
         '''
         Lee la collecion de documentos a partir de la ruta indicada.
@@ -118,8 +118,8 @@ class Indexer:
 
 start = time.clock()
 a = Indexer()
-a.readStopwords()
-a.readCollection()
+a.ReadStopwords()
+a.ReadCollection()
 print('Palabras contadas: ', len(a.vocabulary))
 print(a.vocabulary)
 print('Finalizado!\nDuracion: ', time.clock() - start)
