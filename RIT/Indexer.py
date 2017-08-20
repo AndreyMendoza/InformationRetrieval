@@ -125,9 +125,17 @@ class Indexer:
 
     def Weights(self):
 
-        None
+        N = self.collection['totalDocs']                            #Total de documentos
+        ni = 0
 
+        for ID in self.frecuencies:                                 #Para cada doc de la lista de frecuencias:
+            terms = self.frecuencies.get(ID)                        #Saca los terminos
+            for word in terms:
+                Fij = terms[word]                                   #Frecuencia de 'word'
+                ni =  self.vocabulary[word]                         #Documentos en los que aparece 'word'
+                weight = (1+ math.log2(Fij))*(math.log2(N/ni))      #Calcula el peso
 
+                self.weights[ID][word] = weight
 
 
 #-----------------------------------------------------------------------------------------------------------------------
