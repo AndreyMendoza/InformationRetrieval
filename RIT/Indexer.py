@@ -2,6 +2,7 @@ import re
 import os
 import unicodedata
 import time
+import math
 
 class Indexer:
 
@@ -47,8 +48,8 @@ class Indexer:
         self.collection['name'] = re.findall(r'[a-zA-Z0-9][a-zA-Z0-9\.]*', self.collection['path'])[-1]
         subDir = os.listdir(self.collection['path'])                #Obtiene los subdirectorios
         for dir in subDir:
-            fileNames = os.listdir(self.collection['path'] + '\\' + dir)
-            self.collection['totalDocs'] += len(fileNames)          #Cantidad de documentos
+            fileNames = os.listdir(self.collection['path'] + '\\' + dir) #Rutas de los archivos de una subcarpeta
+            self.collection['totalDocs'] += len(fileNames)               #Suma al total de archivos
             for fileName in fileNames:
                 match = re.search(r'\w\w*.txt', fileName)
                 if match:
@@ -77,6 +78,12 @@ class Indexer:
         #self.docID += 1                                             # Aumentar el contador de documentos
 
         regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                    # Regex para validar el texto valido
+
+
+        '''
+        Hay que cambiar el orden de la lógica o buscar otro metodo, no agarra palabras con tildes en la regex de momento
+        '''
+
         for line in docHandler:                                     # Leer el documento linea por linea
             words = re.findall(regex, line)                         # Lista de palabras leidas que cumplen con la ER
             for word in words:                                      # Quitar acentos y transformar a minusculas las palabras
@@ -116,6 +123,18 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+    def Weights(self):
+
+        None
+
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+'''
+Ejecución del programa
+'''
 start = time.clock()
 a = Indexer()
 a.ReadStopwords()
