@@ -44,12 +44,12 @@ class Indexer:
         Lee la collecion de documentos a partir de la ruta indicada.
         :return:
         '''
-                                                                    # Extrae el nombre de la coleccion
+                                                                            #Extrae el nombre de la coleccion
         self.collection['name'] = re.findall(r'[a-zA-Z0-9][a-zA-Z0-9\.]*', self.collection['path'])[-1]
-        subDir = os.listdir(self.collection['path'])                #Obtiene los subdirectorios
+        subDir = os.listdir(self.collection['path'])                        #Obtiene los subdirectorios
         for dir in subDir:
-            fileNames = os.listdir(self.collection['path'] + '\\' + dir) #Rutas de los archivos de una subcarpeta
-            self.collection['totalDocs'] += len(fileNames)               #Suma al total de archivos
+            fileNames = os.listdir(self.collection['path'] + '\\' + dir)    #Rutas de los archivos de una subcarpeta
+            self.collection['totalDocs'] += len(fileNames)                  #Suma al total de archivos
             for fileName in fileNames:
                 match = re.search(r'\w\w*.txt', fileName)
                 if match:
@@ -73,7 +73,7 @@ class Indexer:
         #Crear un espacio para el documento en cada diccionario.
         ID = self.docID                                             # Numero de documento
         self.documents[ID] = {'path': filePath}
-        self.frecuencies[ID] = {'totalTerms': 0}
+        self.frecuencies[ID] = {'totalTerms': 0, 'terms':{}}
         self.weights[ID] = {}
         #self.docID += 1                                             # Aumentar el contador de documentos
 
