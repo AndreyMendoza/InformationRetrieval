@@ -74,16 +74,13 @@ class Indexer:
         ID = self.docID                                             # Numero de documento
         self.documents[ID] = {'path': filePath}
         self.frecuencies[ID] = {'totalTerms': 0, 'terms':{}}
-        self.weights[ID] = {}
         #self.docID += 1                                             # Aumentar el contador de documentos
 
         regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                    # Regex para validar el texto valido
 
-
         '''
         Hay que cambiar el orden de la lógica o buscar otro metodo, no agarra palabras con tildes en la regex de momento
         '''
-
         for line in docHandler:                                     # Leer el documento linea por linea
             words = re.findall(regex, line)                         # Lista de palabras leidas que cumplen con la ER
             for word in words:                                      # Quitar acentos y transformar a minusculas las palabras
@@ -91,10 +88,10 @@ class Indexer:
                     word = self.DeleteAccents(word)
                     word = word.lower()
 
-                    if self.frecuencies[ID].get(word):              # Si ya aparecio en el documento, aumentar el contador
-                        self.frecuencies[ID][word] += 1
+                    if self.frecuencies[ID]['terms'].get(word):              # Si ya aparecio en el documento, aumentar el contador
+                        self.frecuencies[ID]['terms'][word] += 1
                     else:
-                        self.frecuencies[ID][word] = 1              # Crear par ordenado con el termino y la frecuencia
+                        self.frecuencies[ID]['terms'][word] = 1              # Crear par ordenado con el termino y la frecuencia
                         self.frecuencies[ID]['totalTerms'] += 1     # Aumentar la cantidad de terminos distintos
 
                         if self.vocabulary.get(word):               # Si la palabra ya existe en el vocabulario
@@ -129,13 +126,15 @@ class Indexer:
         ni = 0
 
         for ID in self.frecuencies:                                 #Para cada doc de la lista de frecuencias:
-            terms = self.frecuencies.get(ID)                        #Saca los terminos
+            terms = self.frecuencies[ID]['terms']                      #Saca los terminos
+            total = self.frecuencies[ID]['totalTerms']
+            self.weights[ID] = {'totalTerms':total, 'terms':{}}
             for word in terms:
                 Fij = terms[word]                                   #Frecuencia de 'word'
                 ni =  self.vocabulary[word]                         #Documentos en los que aparece 'word'
                 weight = (1+ math.log2(Fij))*(math.log2(N/ni))      #Calcula el peso
 
-                self.weights[ID][word] = weight
+                self.weights[ID]['terms'][word] = weight
 
 
 #-----------------------------------------------------------------------------------------------------------------------
