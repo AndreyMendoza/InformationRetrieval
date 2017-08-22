@@ -148,4 +148,9 @@ a.ReadStopwords()
 a.ReadCollection()
 print('Palabras contadas: ', len(a.vocabulary))
 #print(a.vocabulary)
+terminos = list(a.vocabulary.keys())
+terminos.sort()
+
+for i in terminos:
+    a.vocabulary.get(i)
 print('Finalizado!\nDuracion: ', time.clock() - start)
