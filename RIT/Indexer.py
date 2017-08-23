@@ -1,8 +1,5 @@
-import re
-import os
-import unicodedata
-import time
-import math
+import re, os, unicodedata, time, math
+import json as js
 
 class Indexer:
 
@@ -153,7 +150,6 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-
     def SortDocs(self):
 
         sortedDocs = self.SortDocTerms()
@@ -172,6 +168,19 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+    def WriteIndex(self):
+
+        json = js.dumps({'Coleccion': self.collection,
+                         'Documents': self.documents,
+                         'Frecuencias': self.frequencies,
+                         'Pesos': self.weights,
+                         'Vocabulario': self.vocabulary})
+        file = open('..\\index.html', 'w')
+        file.write(json)
+        file.close()
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 '''
 Ejecución del programa
 '''
@@ -181,7 +190,6 @@ a.ReadStopwords()
 a.ReadCollection()
 
 a.SortDocs()
-
-print(list(a.frequencies[1]['terms'])[0:20])
+a.WriteIndex()
 
 print('Finalizado!\nDuracion: ', time.clock() - start)
