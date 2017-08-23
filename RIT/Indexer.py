@@ -3,6 +3,7 @@ import os
 import unicodedata
 import time
 import math
+import json
 
 class Indexer:
 
@@ -128,13 +129,41 @@ class Indexer:
         for ID in self.frecuencies:                                     #Para cada doc de la lista de frecuencias:
             terms = self.frecuencies[ID]['terms']                       #Saca los terminos
             total = self.frecuencies[ID]['totalTerms']
-            self.weights[ID] = {'totalTerms':total, 'terms':{}}
+            self.weights[ID] = {'totalTerms':total, 'terms':{}, 'norm':0}
+            #norm = 0
             for word in terms:
                 Fij = terms[word]                                       #Frecuencia de 'word'
                 ni =  self.vocabulary[word]                             #Documentos en los que aparece 'word'
                 weight = (1+ math.log2(Fij))*(math.log2(N/ni))          #Calcula el peso
-
+                #norm+= weight**2
                 self.weights[ID]['terms'][word] = weight                #Se guardan las palabras sin orden alfabetico de momento
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def Output(self):
+
+        # print(a.vocabulary)
+        terminos = list(self.vocabulary.keys())
+        terminos.sort()
+
+        out_frequencies = {}
+        out_weights = {}
+        for i in terminos:
+            self.vocabulary.get(i)
+
+        #print('Finalizado!\nDuracion: ', time.clock() - start)
+
+
+    #{ID: {total:N, terms:{palabra:x, palabra:x} } }
+    def sortDocs(self):
+        sortedDocs = []
+        for ID in self.frecuencies:
+            for terms in ID['terms']:
+                sortedDocs += [list(terms).sort()]
+
+        return sortedDocs
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -146,11 +175,6 @@ start = time.clock()
 a = Indexer()
 a.ReadStopwords()
 a.ReadCollection()
-print('Palabras contadas: ', len(a.vocabulary))
-#print(a.vocabulary)
-terminos = list(a.vocabulary.keys())
-terminos.sort()
 
-for i in terminos:
-    a.vocabulary.get(i)
-print('Finalizado!\nDuracion: ', time.clock() - start)
+print(a.sortDocs()[0])
+print('Palabras contadas: ', len(a.vocabulary))
