@@ -1,7 +1,7 @@
-import re, os, unicodedata, time, math
-import json as js
+import re, os, time, math, json as js
+from RIT.TextTools import *
 
-class Indexer:
+class Indexer(TextTools):
 
     def __init__(self):#, stopwordsDir, collectionDir, prefix):
 
@@ -101,22 +101,6 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def DeleteAccents(self, word):
-
-        '''
-        Elimina todos los acentos a excepcion de la 'ñ'
-        :param word: palabra a la que se desea eliminar los acentos
-        :return: palabra con los acentos eliminados
-        '''
-
-        pos = word.find('ñ')
-        result = "".join(c for c in unicodedata.normalize('NFD', word) if unicodedata.category(c) != 'Mn')
-        if pos != -1:
-            result = result[:pos] + 'ñ' + result[pos + 1:]
-        return result
-
-#-----------------------------------------------------------------------------------------------------------------------
-
     def Weights(self):
 
         N = self.collection['totalDocs']                                #Total de documentos
@@ -175,7 +159,7 @@ class Indexer:
                          'Frecuencias': self.frequencies,
                          'Pesos': self.weights,
                          'Vocabulario': self.vocabulary})
-        file = open('..\\index.html', 'w')
+        file = open('..\\' + self.prefix + '.json', 'w')
         file.write(json)
         file.close()
 
