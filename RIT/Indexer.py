@@ -139,6 +139,21 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+    def SortedDocs(self):
+
+        sortedDocs = []
+        for ID in self.frecuencies:
+            terms = list(self.frecuencies[ID]['terms'])
+            terms.sort()
+            sortedDocs += [terms]
+        return sortedDocs
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 '''
 Ejecución del programa
 '''
@@ -146,11 +161,7 @@ start = time.clock()
 a = Indexer()
 a.ReadStopwords()
 a.ReadCollection()
-print('Palabras contadas: ', len(a.vocabulary))
-#print(a.vocabulary)
-terminos = list(a.vocabulary.keys())
-terminos.sort()
 
-for i in terminos:
-    a.vocabulary.get(i)
+print(a.SortedDocs()[0])
+
 print('Finalizado!\nDuracion: ', time.clock() - start)
