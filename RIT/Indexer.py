@@ -1,9 +1,5 @@
-import re
-import os
-import unicodedata
-import time
-import math
-import json
+import re, os, unicodedata, time, math
+import json as js
 
 class Indexer:
 
@@ -16,7 +12,7 @@ class Indexer:
 
         self.collection = {'name':'', 'path':'..\man.es', 'totalDocs': 0}
         self.documents = {}
-        self.frecuencies = {}
+        self.frequencies = {}
         self.weights = {}
         self.vocabulary = {}
 
@@ -75,7 +71,7 @@ class Indexer:
         #Crear un espacio para el documento en cada diccionario.
         ID = self.docID                                                 # Numero de documento
         self.documents[ID] = {'path': filePath}
-        self.frecuencies[ID] = {'totalTerms': 0, 'terms':{}}            #terms contiene todas las palabras con sus frecuencias
+        self.frequencies[ID] = {'totalTerms': 0, 'terms':{}}            #terms contiene todas las palabras con sus frecuencias
 
         regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                        # Regex para validar el texto valido
 
@@ -89,11 +85,11 @@ class Indexer:
                     word = self.DeleteAccents(word)
                     word = word.lower()
 
-                    if self.frecuencies[ID]['terms'].get(word):         # Si ya aparecio en el documento, aumentar el contador
-                        self.frecuencies[ID]['terms'][word] += 1
+                    if self.frequencies[ID]['terms'].get(word):         # Si ya aparecio en el documento, aumentar el contador
+                        self.frequencies[ID]['terms'][word] += 1
                     else:
-                        self.frecuencies[ID]['terms'][word] = 1         # Crear par ordenado con el termino y la frecuencia
-                        self.frecuencies[ID]['totalTerms'] += 1         # Aumentar la cantidad de terminos distintos
+                        self.frequencies[ID]['terms'][word] = 1         # Crear par ordenado con el termino y la frecuencia
+                        self.frequencies[ID]['totalTerms'] += 1         # Aumentar la cantidad de terminos distintos
 
                         if self.vocabulary.get(word):                   # Si la palabra ya existe en el vocabulario
                             self.vocabulary[word] += 1                  # Contabilizar en la cantidad de documentos que aparece
@@ -126,11 +122,10 @@ class Indexer:
         N = self.collection['totalDocs']                                #Total de documentos
         ni = 0
 
-        for ID in self.frecuencies:                                     #Para cada doc de la lista de frecuencias:
-            terms = self.frecuencies[ID]['terms']                       #Saca los terminos
-            total = self.frecuencies[ID]['totalTerms']
-            self.weights[ID] = {'totalTerms':total, 'terms':{}, 'norm':0}
-            #norm = 0
+        for ID in self.frequencies:                                     #Para cada doc de la lista de frecuencias:
+            terms = self.frequencies[ID]['terms']                       #Saca los terminos
+            total = self.frequencies[ID]['totalTerms']
+            self.weights[ID] = {'totalTerms':total, 'terms':{}}
             for word in terms:
                 Fij = terms[word]                                       #Frecuencia de 'word'
                 ni =  self.vocabulary[word]                             #Documentos en los que aparece 'word'
@@ -141,18 +136,48 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def SortedDocs(self):
+    def SortDocTerms(self):
 
+        '''
+        frecuencies = {ID: {'totalTerms': N, 'terms': {term1: asd, termN: ad}}}
+        '''
         sortedDocs = []
-        for ID in self.frecuencies:
-            terms = list(self.frecuencies[ID]['terms'])
+        for ID in self.frequencies:
+            terms = list(self.frequencies[ID]['terms'])
             terms.sort()
             sortedDocs += [terms]
         return sortedDocs
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+    def SortDocs(self):
 
+        sortedDocs = self.SortDocTerms()
+
+
+        for docID in range(0, len(sortedDocs)):
+            sortedFrequencies = {}
+            sortedWeights = {}
+
+            for term in sortedDocs[docID]:
+                sortedFrequencies[term] = self.frequencies[docID + 1]['terms'][term]
+                sortedWeights[term] = self.weights[docID + 1]['terms'][term]
+
+            self.frequencies[docID + 1]['terms'] = sortedFrequencies
+            self.weights[docID + 1]['terms'] = sortedWeights
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def WriteIndex(self):
+
+        json = js.dumps({'Coleccion': self.collection,
+                         'Documents': self.documents,
+                         'Frecuencias': self.frequencies,
+                         'Pesos': self.weights,
+                         'Vocabulario': self.vocabulary})
+        file = open('..\\index.html', 'w')
+        file.write(json)
+        file.close()
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -164,6 +189,7 @@ a = Indexer()
 a.ReadStopwords()
 a.ReadCollection()
 
-print(a.SortedDocs()[0])
+a.SortDocs()
+a.WriteIndex()
 
 print('Finalizado!\nDuracion: ', time.clock() - start)
