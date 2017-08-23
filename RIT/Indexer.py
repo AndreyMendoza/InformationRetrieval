@@ -141,28 +141,16 @@ class Indexer:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def Output(self):
+    def SortedDocs(self):
 
-        # print(a.vocabulary)
-        terminos = list(self.vocabulary.keys())
-        terminos.sort()
-
-        out_frequencies = {}
-        out_weights = {}
-        for i in terminos:
-            self.vocabulary.get(i)
-
-        #print('Finalizado!\nDuracion: ', time.clock() - start)
-
-
-    #{ID: {total:N, terms:{palabra:x, palabra:x} } }
-    def sortDocs(self):
         sortedDocs = []
         for ID in self.frecuencies:
-            for terms in ID['terms']:
-                sortedDocs += [list(terms).sort()]
-
+            terms = list(self.frecuencies[ID]['terms'])
+            terms.sort()
+            sortedDocs += [terms]
         return sortedDocs
+
+#-----------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -176,5 +164,6 @@ a = Indexer()
 a.ReadStopwords()
 a.ReadCollection()
 
-print(a.sortDocs()[0])
-print('Palabras contadas: ', len(a.vocabulary))
+print(a.SortedDocs()[0])
+
+print('Finalizado!\nDuracion: ', time.clock() - start)
