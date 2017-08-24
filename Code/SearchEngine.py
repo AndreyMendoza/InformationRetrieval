@@ -96,6 +96,8 @@ class SearchEngine(TextTools):
 
         return ranking
 
+    def BM25Seach(self, query):
+        None
 
 
 
