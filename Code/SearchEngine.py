@@ -12,9 +12,10 @@ class SearchEngine(TextTools):
         self.queryFrequencies = {'totalTerms': 0, 'terms':{}}
         self.queryWeights = {}
 
-        self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
-        self.Weights()
+        #self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
+        #self.Weights()
 
+#-----------------------------------------------------------------------------------------------------------------------
 
     def ReadIndexFiles(self):
 
@@ -44,6 +45,8 @@ class SearchEngine(TextTools):
         self.stopwords = js.loads(list(file)[0])['STOPWORDS']
         file.close()
 
+#-----------------------------------------------------------------------------------------------------------------------
+
     def ProcessQuery(self, query):
 
         regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                    # Regex para validar el texto ingresado
@@ -59,6 +62,7 @@ class SearchEngine(TextTools):
                     self.queryFrequencies['terms'][word] = 1
                     self.queryFrequencies['totalTerms'] += 1
 
+#-----------------------------------------------------------------------------------------------------------------------
 
     def Weights(self):
 
@@ -76,6 +80,7 @@ class SearchEngine(TextTools):
             norm += weight ** 2
         self.queryNorm = math.sqrt(norm)
 
+#-----------------------------------------------------------------------------------------------------------------------
 
     def VectorSearch(self, query):
         self.ProcessQuery(query)  # Quitar stopwords, acentos y sacar pesos
@@ -86,7 +91,7 @@ class SearchEngine(TextTools):
             sum = 0
             for term in self.queryWeights:
                 try:
-                    Wtd = self.weights[ID][term]                    #Weight de term en el doc
+                    Wtd = self.weights[ID]['terms'][term]           #Weight de term en el doc
                     Wtq = self.queryWeights[term]                   #Weight de term en el query
                     sum += Wtd*Wtq
                 except:
@@ -94,10 +99,25 @@ class SearchEngine(TextTools):
             sim = sum/(self.weights[ID]['norm'] * self.queryNorm)
             ranking[ID] = sim
 
+        ranking = self.SortRanking(ranking)
         return ranking
+
+#-----------------------------------------------------------------------------------------------------------------------
 
     def BM25Seach(self, query):
         None
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def SortRanking(self, dic):
+        sorted = list()
+        sorted.sort()
+        resultDicc = {}
+
+        for key in sorted:
+            resultDicc[key] = dic[key]
+
+        return resultDicc
 
 
 

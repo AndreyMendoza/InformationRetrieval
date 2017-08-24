@@ -13,6 +13,6 @@ a.SortDocs()
 a.WriteIndex()'''
 
 s = SearchEngine('tests', 'testResults', 'Introducción a los archivos especiales')
-print(s.queryWeights)
+print(s.VectorSearch('Introducción a los archivos especiales'))
 
 print('Finalizado!\nDuracion: ', time.clock() - start)
