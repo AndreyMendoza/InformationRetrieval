@@ -113,7 +113,7 @@ class Indexer(TextTools):
             for word in terms:
                 Fij = terms[word]                                       # Frecuencia de 'word'
                 ni =  self.vocabulary[word]                             # Documentos en los que aparece 'word'
-                weight = (1+ math.log2(Fij))*(math.log2(N/ni))          # Calcula el peso
+                weight = (1 + math.log2(Fij)) * (math.log2(N/ni))       # Calcula el peso
                 self.weights[ID]['terms'][word] = weight                # Se guardan las palabras sin orden alfabetico de momento
                 norm += weight ** 2
             self.weights[ID]['norm'] = math.sqrt(norm)
