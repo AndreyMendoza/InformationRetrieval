@@ -2,7 +2,6 @@ from Code.TextTools import *
 import json as js, re, math
 
 
-
 class SearchEngine(TextTools):
 
     def __init__(self, prefix, outputName, query):
@@ -47,7 +46,7 @@ class SearchEngine(TextTools):
 
     def ProcessQuery(self, query):
 
-        regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                    # Regex para validar el texto valido
+        regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                    # Regex para validar el texto ingresado
         queryWords = re.findall(regex, query)
 
         for word in queryWords:
@@ -76,6 +75,29 @@ class SearchEngine(TextTools):
             self.queryWeights[word] = weight
             norm += weight ** 2
         self.queryNorm = math.sqrt(norm)
+
+
+    def VectorSearch(self, query):
+        self.ProcessQuery(query)  # Quitar stopwords, acentos y sacar pesos
+        self.Weights()
+        ranking = {}
+
+        for ID in self.weights:
+            sum = 0
+            for term in self.queryWeights:
+                try:
+                    Wtd = self.weights[ID][term]                    #Weight de term en el doc
+                    Wtq = self.queryWeights[term]                   #Weight de term en el query
+                    sum += Wtd*Wtq
+                except:
+                    continue
+            sim = sum/(self.weights[ID]['norm'] * self.queryNorm)
+            ranking[ID] = sim
+
+        return ranking
+
+
+
 
 
 
