@@ -4,17 +4,13 @@ import json as js, re, math
 
 class SearchEngine(Tools):
 
-    def __init__(self, prefix, outputName, query):
+    def __init__(self, prefix, outputName):
 
         self.prefix = prefix
         self.outputName = outputName
         self.ReadIndexFiles()
         self.queryFrequencies = {'totalTerms': 0, 'terms':{}}
         self.queryWeights = {}
-
-        #self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
-        #self.Weights()
-
 #-----------------------------------------------------------------------------------------------------------------------
 
     def ReadIndexFiles(self):

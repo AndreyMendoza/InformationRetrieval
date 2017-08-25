@@ -11,7 +11,7 @@ a = Indexer()
 a.Run()
 
 
-# s = SearchEngine('tests', 'testResults', 'Introducción a los archivos especiales')
+# s = SearchEngine('tests', 'testResults')
 # res, values = s.BM25Search('archivos comprimidos.')
 # print(res)
 # print(s.documents[values[1][0]])

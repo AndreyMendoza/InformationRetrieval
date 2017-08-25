@@ -63,6 +63,7 @@ class Indexer(Tools):
                     filePath = self.collection['path'] + '\\' + dir + '\\' + fileName
                     handler = open(filePath, 'r')
                     average += self.ProcessDoc(handler, filePath)
+                    self.ProcessDoc(handler, filePath)
                     handler.close()
         self.collection['average'] = average
 
