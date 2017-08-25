@@ -99,7 +99,7 @@ class SearchEngine(Tools):
             sim = sum/(self.weights[ID]['norm'] * self.queryNorm)
             ranking[ID] = sim
 
-        ranking, sortedValues = self.SortDictionary(ranking, 1)
+        ranking, sortedValues = self.SortDictionary(ranking, 1, True)
         return ranking, sortedValues
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -112,15 +112,16 @@ class SearchEngine(Tools):
 
         for ID in self.weights:
             sim = 0
-            for term in self.queryFrequencies:
+            for term in self.queryFrequencies['terms']:
                 try:
-                    n = self.vocabulary[term]
-                    idf = math.log10((N - n + 0.5) / (n + 0.5))
                     Fqi = self.frequencies[ID]['terms'][term]
-                    sim += idf * ((Fqi * (k + 1)) / (Fqi + k * (1 - b + b * (self.frequencies[ID]['long'] / average))))
+                    n = self.vocabulary[term]
+                    if n <= (self.collection['totalDocs'] // 2):
+                        idf = math.log10((N - n + 0.5) / (n + 0.5))
+                        sim += idf * ((Fqi * (k + 1)) / (Fqi + k * (1 - b + b * (self.frequencies[ID]['long'] / average))))
                 except:
                     continue
             ranking[ID] = sim
-        ranking, sortedValues = self.SortDictionary(ranking, 1)
+        ranking, sortedValues = self.SortDictionary(ranking, 1, True)
         return ranking, sortedValues
 

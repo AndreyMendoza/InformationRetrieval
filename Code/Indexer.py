@@ -141,7 +141,7 @@ class Indexer(Tools):
         '''
 
         for ID in self.frequencies:
-            self.frequencies[ID]['terms'] = self.SortDictionary(self.frequencies[ID]['terms'], 0)[0]
+            self.frequencies[ID]['terms'] = self.SortDictionary(self.frequencies[ID]['terms'], 0, False)[0]
 
 #-----------------------------------------------------------------------------------------------------------------------
 

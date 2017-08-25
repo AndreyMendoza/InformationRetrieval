@@ -20,8 +20,8 @@ class Tools:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def SortDictionary(self, dict, value):
-        sortedValues = sorted(dict.items(), key=operator.itemgetter(value), reverse=True)
+    def SortDictionary(self, dict, value, reverse):
+        sortedValues = sorted(dict.items(), key=operator.itemgetter(value), reverse=reverse)
         resultDict = {}
 
         for tuple in sortedValues:
