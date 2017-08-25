@@ -1,7 +1,7 @@
 import re, os, time, math, json as js
-from Code.TextTools import *
+from Code.Tools import *
 
-class Indexer(TextTools):
+class Indexer(Tools):
 
     def __init__(self):#, stopwordsDir, collectionDir, prefix):
 
@@ -23,8 +23,8 @@ class Indexer(TextTools):
     def Run(self):
         self.ReadStopwords()
         self.ReadCollection()
+        self.SortFrequencies()
         self.Weights()
-        self.SortDocs()
         self.WriteIndex()
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ class Indexer(TextTools):
                     handler = open(filePath, 'r')
                     average += self.ProcessDoc(handler, filePath)
                     handler.close()
-        self.collection['average'] += average
+        self.collection['average'] = average
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -134,35 +134,14 @@ class Indexer(TextTools):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def SortDocTerms(self):
+    def SortFrequencies(self):
 
         '''
         frecuencies = {ID: {'totalTerms': N, 'terms': {term1: asd}}}
         '''
-        sortedDocs = []
+
         for ID in self.frequencies:
-            terms = list(self.frequencies[ID]['terms'])
-            terms.sort()
-            sortedDocs += [terms]
-        return sortedDocs
-
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def SortDocs(self):
-
-        sortedDocs = self.SortDocTerms()
-
-
-        for docID in range(0, len(sortedDocs)):
-            sortedFrequencies = {}
-            sortedWeights = {}
-
-            for term in sortedDocs[docID]:
-                sortedFrequencies[term] = self.frequencies[docID + 1]['terms'][term]
-                sortedWeights[term] = self.weights[docID + 1]['terms'][term]
-
-            self.frequencies[docID + 1]['terms'] = sortedFrequencies
-            self.weights[docID + 1]['terms'] = sortedWeights
+            self.frequencies[ID]['terms'] = self.SortDictionary(self.frequencies[ID]['terms'], 0)[0]
 
 #-----------------------------------------------------------------------------------------------------------------------
 

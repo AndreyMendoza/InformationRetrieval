@@ -1,8 +1,8 @@
-from Code.TextTools import *
-import json as js, re, math, operator
+from Code.Tools import *
+import json as js, re, math
 
 
-class SearchEngine(TextTools):
+class SearchEngine(Tools):
 
     def __init__(self, prefix, outputName, query):
 
@@ -99,7 +99,7 @@ class SearchEngine(TextTools):
             sim = sum/(self.weights[ID]['norm'] * self.queryNorm)
             ranking[ID] = sim
 
-        ranking, sortedValues = self.SortRanking(ranking)
+        ranking, sortedValues = self.SortDictionary(ranking, 1)
         return ranking, sortedValues
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -121,23 +121,6 @@ class SearchEngine(TextTools):
                 except:
                     continue
             ranking[ID] = sim
-        ranking, sortedValues = self.SortRanking(ranking)
+        ranking, sortedValues = self.SortDictionary(ranking, 1)
         return ranking, sortedValues
-
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def SortRanking(self, dict):
-        sortedValues = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)
-        resultDict = {}
-
-        for tuple in sortedValues:
-            resultDict[tuple[0]] = tuple[1]
-
-        return resultDict, sortedValues
-
-
-
-
-
-
 
