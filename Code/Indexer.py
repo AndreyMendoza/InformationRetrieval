@@ -18,6 +18,15 @@ class Indexer(TextTools):
 
         self.docID = 1
 
+#------------------------------------------------------------------------------------------------------------------------
+
+    def Run(self):
+        self.ReadStopwords()
+        self.ReadCollection()
+        self.Weights()
+        self.SortDocs()
+        self.WriteIndex()
+
 #-----------------------------------------------------------------------------------------------------------------------
 
     def ReadStopwords(self):
@@ -44,6 +53,7 @@ class Indexer(TextTools):
                                                                             #Extrae el nombre de la coleccion
         self.collection['name'] = re.findall(r'[a-zA-Z0-9][a-zA-Z0-9\.]*', self.collection['path'])[-1]
         subDir = os.listdir(self.collection['path'])                        #Obtiene los subdirectorios
+        average = 0
         for dir in subDir:
             fileNames = os.listdir(self.collection['path'] + '\\' + dir)    #Rutas de los archivos de una subcarpeta
             self.collection['totalDocs'] += len(fileNames)                  #Suma al total de archivos
@@ -52,9 +62,9 @@ class Indexer(TextTools):
                 if match:
                     filePath = self.collection['path'] + '\\' + dir + '\\' + fileName
                     handler = open(filePath, 'r')
-                    self.ProcessDoc(handler, filePath)
+                    average += self.ProcessDoc(handler, filePath)
                     handler.close()
-        self.Weights()
+        self.collection['average'] += average
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -74,6 +84,7 @@ class Indexer(TextTools):
         self.frequencies[ID] = {'totalTerms': 0, 'terms':{}, 'long':0}  # Terms contiene todas las palabras con sus frecuencias
 
         regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                        # Regex para validar el texto valido
+        long = 0
 
         '''
         Arreglar la vara de las tildes, y la regex en general xD
@@ -96,12 +107,10 @@ class Indexer(TextTools):
                         else:
                             self.vocabulary[word] = 1                   # Agregar la palabra al vocabulario y apariciones en documentos
 
-                    self.frequencies[ID]['long'] += 1
-                #else:
-                 #   words.remove(word)
-
-        self.collection['average'] += self.frequencies[ID]['long']
+                    long += 1
+        self.frequencies[ID]['long'] = long
         self.docID += 1                                                 # Aumentar el contador de documentos
+        return long
 
 #-----------------------------------------------------------------------------------------------------------------------
 
