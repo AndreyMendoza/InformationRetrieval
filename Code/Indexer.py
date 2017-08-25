@@ -10,7 +10,7 @@ class Indexer(TextTools):
         self.collectionDir = '..\man.es'
         self.prefix = 'tests'
 
-        self.collection = {'name':'', 'path':'..\man.es', 'totalDocs': 0}
+        self.collection = {'name':'', 'path':'..\man.es', 'totalDocs': 0, 'average': 0}
         self.documents = {}
         self.frequencies = {}
         self.weights = {}
@@ -71,7 +71,7 @@ class Indexer(TextTools):
         #Crear un espacio para el documento en cada diccionario.
         ID = self.docID                                                 # Numero de documento
         self.documents[ID] = {'path': filePath}
-        self.frequencies[ID] = {'totalTerms': 0, 'terms':{}}            #terms contiene todas las palabras con sus frecuencias
+        self.frequencies[ID] = {'totalTerms': 0, 'terms':{}, 'long':0}  # Terms contiene todas las palabras con sus frecuencias
 
         regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                        # Regex para validar el texto valido
 
@@ -95,8 +95,12 @@ class Indexer(TextTools):
                             self.vocabulary[word] += 1                  # Contabilizar en la cantidad de documentos que aparece
                         else:
                             self.vocabulary[word] = 1                   # Agregar la palabra al vocabulario y apariciones en documentos
-                else:
-                    words.remove(word)
+
+                    self.frequencies[ID]['long'] += 1
+                #else:
+                 #   words.remove(word)
+
+        self.collection['average'] += self.frequencies[ID]['long']
         self.docID += 1                                                 # Aumentar el contador de documentos
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -124,7 +128,7 @@ class Indexer(TextTools):
     def SortDocTerms(self):
 
         '''
-        frecuencies = {ID: {'totalTerms': N, 'terms': {term1: asd, termN: ad}}}
+        frecuencies = {ID: {'totalTerms': N, 'terms': {term1: asd}}}
         '''
         sortedDocs = []
         for ID in self.frequencies:

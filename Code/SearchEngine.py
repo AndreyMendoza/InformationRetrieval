@@ -1,5 +1,5 @@
 from Code.TextTools import *
-import json as js, re, math
+import json as js, re, math, operator
 
 
 class SearchEngine(TextTools):
@@ -99,25 +99,41 @@ class SearchEngine(TextTools):
             sim = sum/(self.weights[ID]['norm'] * self.queryNorm)
             ranking[ID] = sim
 
-        ranking = self.SortRanking(ranking)
-        return ranking
+        ranking, sortedValues = self.SortRanking(ranking)
+        return ranking, sortedValues
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def BM25Seach(self, query):
-        None
+    def BM25Search(self, query, k = 1.5, b = 1):
+        self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
+        N = self.collection['totalDocs']
+        average = self.collection['average'] / N
+        ranking = {}
+
+        for ID in self.weights:
+            sim = 0
+            for term in self.queryFrequencies:
+                try:
+                    n = self.vocabulary[term]
+                    idf = math.log10((N - n + 0.5) / (n + 0.5))
+                    Fqi = self.frequencies[ID]['terms'][term]
+                    sim += idf * ((Fqi * (k + 1)) / (Fqi + k * (1 - b + b * (self.frequencies[ID]['long'] / average))))
+                except:
+                    continue
+            ranking[ID] = sim
+        ranking, sortedValues = self.SortRanking(ranking)
+        return ranking, sortedValues
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def SortRanking(self, dic):
-        sorted = list()
-        sorted.sort()
-        resultDicc = {}
+    def SortRanking(self, dict):
+        sortedValues = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)
+        resultDict = {}
 
-        for key in sorted:
-            resultDicc[key] = dic[key]
+        for tuple in sortedValues:
+            resultDict[tuple[0]] = tuple[1]
 
-        return resultDicc
+        return resultDict, sortedValues
 
 
 
