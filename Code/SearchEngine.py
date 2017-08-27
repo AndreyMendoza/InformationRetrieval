@@ -11,6 +11,7 @@ class SearchEngine(Tools):
         self.ReadIndexFiles()
         self.queryFrequencies = {'totalTerms': 0, 'terms':{}}
         self.queryWeights = {}
+
 #-----------------------------------------------------------------------------------------------------------------------
 
     def ReadIndexFiles(self):
@@ -45,7 +46,9 @@ class SearchEngine(Tools):
 
     def ProcessQuery(self, query):
 
-        regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                    # Regex para validar el texto ingresado
+        regex = r'\w[\w.]*[\w]­?|\w'                                # Regex para validar el texto ingresado
+        complement = r'\.{2,}'
+        query = re.sub(complement, r' ', query, 0)
         queryWords = re.findall(regex, query)
 
         for word in queryWords:
@@ -92,6 +95,7 @@ class SearchEngine(Tools):
                     sum += Wtd*Wtq
                 except:
                     continue
+            a = self.weights[ID]['norm']
             sim = sum/(self.weights[ID]['norm'] * self.queryNorm)
             ranking[ID] = sim
 

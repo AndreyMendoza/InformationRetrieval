@@ -57,13 +57,14 @@ class Indexer(Tools):
         for dir in subDir:
             fileNames = os.listdir(self.collection['path'] + '\\' + dir)    #Rutas de los archivos de una subcarpeta
             self.collection['totalDocs'] += len(fileNames)                  #Suma al total de archivos
+            largo = fileNames
             for fileName in fileNames:
                 match = re.search(r'\w\w*.txt', fileName)
                 if match:
                     filePath = self.collection['path'] + '\\' + dir + '\\' + fileName
                     handler = open(filePath, 'r')
                     average += self.ProcessDoc(handler, filePath)
-                    self.ProcessDoc(handler, filePath)
+                    #self.ProcessDoc(handler, filePath)
                     handler.close()
         self.collection['average'] = average
 
@@ -84,34 +85,49 @@ class Indexer(Tools):
         self.documents[ID] = {'path': filePath}
         self.frequencies[ID] = {'totalTerms': 0, 'terms':{}, 'long':0}  # Terms contiene todas las palabras con sus frecuencias
 
-        regex = r'[A-Za-zñ0-9]*[\w.ñ]|[A-Za-zñ]'                        # Regex para validar el texto valido
+        complement = r'\.{2,}'
+        regex = r'\w[\w.]*[\w]­?|\w'                                    # Regex para validar el texto valido
         long = 0
 
-        '''
-        Arreglar la vara de las tildes, y la regex en general xD
-        '''
-        for line in docHandler:                                         # Leer el documento linea por linea
+        for line in docHandler:                                         # Leer el documento linea por
+            line = re.sub(complement, r' ', line, 0)
             words = re.findall(regex, line)                             # Lista de palabras leidas que cumplen con la ER
+
             for word in words:                                          # Quitar acentos y transformar a minusculas las palabras
-                if word not in self.stopwords:
-                    word = self.DeleteAccents(word)
-                    word = word.lower()
+                splittedWords = word.split('.')
+                long += self.__AddTerm(word, ID)
 
-                    if self.frequencies[ID]['terms'].get(word):         # Si ya aparecio en el documento, aumentar el contador
-                        self.frequencies[ID]['terms'][word] += 1
-                    else:
-                        self.frequencies[ID]['terms'][word] = 1         # Crear par ordenado con el termino y la frecuencia
-                        self.frequencies[ID]['totalTerms'] += 1         # Aumentar la cantidad de terminos distintos
-
-                        if self.vocabulary.get(word):                   # Si la palabra ya existe en el vocabulario
-                            self.vocabulary[word] += 1                  # Contabilizar en la cantidad de documentos que aparece
-                        else:
-                            self.vocabulary[word] = 1                   # Agregar la palabra al vocabulario y apariciones en documentos
-
-                    long += 1
+                if len(splittedWords) > 1:
+                    for splittedWord in splittedWords:
+                        try:
+                            int(splittedWord)
+                        except:
+                            long += self.__AddTerm(splittedWord, ID)
         self.frequencies[ID]['long'] = long
         self.docID += 1                                                 # Aumentar el contador de documentos
         return long
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def __AddTerm(self, word, docID):
+
+        word = self.DeleteAccents(word)
+        word = word.lower()
+
+        if word not in self.stopwords:
+
+            if self.frequencies[docID]['terms'].get(word):  # Si ya aparecio en el documento, aumentar el contador
+                self.frequencies[docID]['terms'][word] += 1
+            else:
+                self.frequencies[docID]['terms'][word] = 1  # Crear par ordenado con el termino y la frecuencia
+                self.frequencies[docID]['totalTerms'] += 1  # Aumentar la cantidad de terminos distintos
+
+                if self.vocabulary.get(word):  # Si la palabra ya existe en el vocabulario
+                    self.vocabulary[word] += 1  # Contabilizar en la cantidad de documentos que aparece
+                else:
+                    self.vocabulary[word] = 1  # Agregar la palabra al vocabulario y apariciones en documentos
+            return 1
+        return 0
 
 #-----------------------------------------------------------------------------------------------------------------------
 
