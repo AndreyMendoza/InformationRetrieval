@@ -9,7 +9,7 @@ Ejecución del programa
 start = time.clock()
 
 a = Indexer()
-a.Run()
+# a.Run()
 
 
 #print (len(a.vocabulary))
@@ -17,10 +17,9 @@ a.Run()
 #print(list(a.frequencies[1]['terms']))
 
 
-#s = SearchEngine('tests', 'testResults')
-#res, values = s.VectorSearch('convierte direcciones')
-#print(res)
-#print(s.documents[values[0][0]])
+s = SearchEngine('tests', 'testResults')
+res, values = s.BM25Search('compresión de archivos y manejo de archivos comprimidos.')
+s.GenerateHTML(res, 'BM25')
 
 
 print('Finalizado!\nDuracion: ', time.clock() - start)

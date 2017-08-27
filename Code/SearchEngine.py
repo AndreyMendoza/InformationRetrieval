@@ -117,11 +117,56 @@ class SearchEngine(Tools):
                     Fqi = self.frequencies[ID]['terms'][term]
                     n = self.vocabulary[term]
                     if n <= (self.collection['totalDocs'] // 2):
-                        idf = math.log10((N - n + 0.5) / (n + 0.5))
+                        idf = math.log2((N - n + 0.5) / (n + 0.5))
                         sim += idf * ((Fqi * (k + 1)) / (Fqi + k * (1 - b + b * (self.frequencies[ID]['long'] / average))))
                 except:
                     continue
             ranking[ID] = sim
         ranking, sortedValues = self.SortDictionary(ranking, 1, True)
         return ranking, sortedValues
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def GenerateHTML(self, ranking, outputName):
+
+        topHTML = '''<html><head><h1><center> Escalafón  </center></h1></head><body>
+         <table style="width:100%">
+          <tr>
+              <th>Posición</th>
+              <th>Ruta del Archivo</th>
+              <th>Tamaño</th>
+              <th>Fecha de Creación</th>
+              <th>Similitud</th>
+              <th>Descripción</th>
+          </tr>
+        '''
+        pos = 1
+
+        for ranked in ranking:
+            if ranking[ranked] > 0:
+                docPath = self.documents[ranked]['path']
+                fileSize = os.stat(docPath).st_size
+                creationDate = time.ctime(os.path.getctime(docPath))
+                descripcion = 'Montero mamon'
+
+                topHTML += '''
+                    <tr>
+                        <td> <center> ''' + str(pos) + '''</center> </td>      
+                        <td> <center> ''' + docPath + '''</center> </td>
+                        <td> <center>''' + str(fileSize) + '''</center> </td>
+                        <td> <center>''' + creationDate + '''</center> </td>
+                        <td> <center>''' + str(ranking[ranked]) + '''</center> </td>
+                        <td> <center>''' + descripcion + '''</center> </td>
+                    </tr>
+                '''
+                pos += 1
+            else:
+                break
+        topHTML += '''
+        </table> </body> </html>        
+        '''
+
+        file = open('..\\Search Results\\' + outputName + '.html', 'w')
+        file.write(topHTML)
+        file.close()
 

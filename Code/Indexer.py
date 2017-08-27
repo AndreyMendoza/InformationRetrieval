@@ -7,7 +7,6 @@ class Indexer(Tools):
 
         self.stopwordsPath = '..\stopwords.txt'
         self.stopwords = []
-        self.collectionDir = '..\man.es'
         self.prefix = 'tests'
 
         self.collection = {'name':'', 'path':'..\man.es', 'totalDocs': 0, 'average': 0}
@@ -57,7 +56,6 @@ class Indexer(Tools):
         for dir in subDir:
             fileNames = os.listdir(self.collection['path'] + '\\' + dir)    #Rutas de los archivos de una subcarpeta
             self.collection['totalDocs'] += len(fileNames)                  #Suma al total de archivos
-            largo = fileNames
             for fileName in fileNames:
                 match = re.search(r'\w\w*.txt', fileName)
                 if match:
@@ -87,10 +85,21 @@ class Indexer(Tools):
         complement = r'\.{2,}'
         regex = r'\w[\w.]*[\w]­?|\w'                                    # Regex para validar el texto valido
         long = 0
+        specialChar = ''
 
         for line in docHandler:                                         # Leer el documento linea por
-            line = re.sub(complement, r' ', line, 0)
+            line = re.sub(complement, r' ', line, 0)                    # Sustituye dos o mas puntos juntos por un espacio
             words = re.findall(regex, line)                             # Lista de palabras leidas que cumplen con la ER
+
+            if words == []:
+                continue
+            if specialChar != '':
+                words[0] = specialChar + words[0]
+                specialChar = ''
+
+            if words[-1][-1] == '­':
+                specialChar = words[-1][:-1]
+                words = words[:-1]
 
             for word in words:                                          # Quitar acentos y transformar a minusculas las palabras
                 splittedWords = word.split('.')
@@ -114,7 +123,6 @@ class Indexer(Tools):
         word = word.lower()
 
         if word not in self.stopwords:
-
             if self.frequencies[docID]['terms'].get(word):  # Si ya aparecio en el documento, aumentar el contador
                 self.frequencies[docID]['terms'][word] += 1
             else:
@@ -146,7 +154,6 @@ class Indexer(Tools):
                 self.weights[ID]['terms'][word] = weight                # Se guardan las palabras sin orden alfabetico de momento
                 norm += weight ** 2
             self.weights[ID]['norm'] = math.sqrt(norm)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 
