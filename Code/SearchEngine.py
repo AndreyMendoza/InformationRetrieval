@@ -141,7 +141,7 @@ class SearchEngine(Tools):
 
         topHTML = '''<html><head>
             <style>
-            table, h1{
+            table, h1, p{
                 font-family: arial, sans-serif;
                 border-collapse: collapse;
                 width: 100%;
@@ -163,7 +163,8 @@ class SearchEngine(Tools):
                 background-color: #dddddd;
             }
             </style>
-            <h1><center> Escalafón de la consulta: "'''+query+'''"</center></h1></head><body>
+            <h1><center> Escalafón </center></h1></head><body>
+            <p> <b>Consulta:</b> "'''+ query+'''"</p>
             <table style="width:100%">
             <tr>
               <th>Posición</th>
