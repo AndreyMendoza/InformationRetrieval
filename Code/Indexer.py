@@ -1,15 +1,16 @@
-import re, os, time, math, json as js
+import re, sys, math, json as js
 from Code.Tools import *
 
 class Indexer(Tools):
 
-    def __init__(self):#, stopwordsDir, collectionDir, prefix):
+#------------------------------------------------------------------------------------------------------------------------
 
-        self.stopwordsPath = '..\stopwords.txt'
+    def Init(self, stopwordsPath = '', prefix='', collectionPath=''):
+        self.stopwordsPath = stopwordsPath
         self.stopwords = []
-        self.prefix = 'tests'
+        self.prefix = prefix
 
-        self.collection = {'name':'', 'path':'..\man.es', 'totalDocs': 0, 'average': 0}
+        self.collection = {'name': '', 'path': collectionPath, 'totalDocs': 0, 'average': 0}
         self.documents = {}
         self.frequencies = {}
         self.weights = {}
@@ -19,7 +20,9 @@ class Indexer(Tools):
 
 #------------------------------------------------------------------------------------------------------------------------
 
-    def Run(self):
+    def Index(self, stopwordsPath, prefix, collectionPath):
+
+        self.Init(stopwordsPath, prefix, collectionPath)
         self.ReadStopwords()
         self.ReadCollection()
         self.SortFrequencies()
@@ -35,11 +38,14 @@ class Indexer(Tools):
         :return:
         '''
 
-        file = open(self.stopwordsPath, 'r')
-        for line in file:
-            word = re.findall(r'\w\w*', line)                       #Ignora los espacios para tomar solo el termino
-            self.stopwords += word
-        file.close()
+        try:
+            file = open(self.stopwordsPath, 'r')
+            for line in file:
+                word = re.findall(r'\w\w*', line)                   #Ignora los espacios para tomar solo el termino
+                self.stopwords += word
+            file.close()
+        except:
+            sys.exit('El archivo de stopwords no fue encontrado.')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -49,13 +55,19 @@ class Indexer(Tools):
         Lee la collecion de documentos a partir de la ruta indicada.
         :return:
         '''
-                                                                            #Extrae el nombre de la coleccion
+                                                                                #Extrae el nombre de la coleccion
         self.collection['name'] = re.findall(r'[a-zA-Z0-9][a-zA-Z0-9\.]*', self.collection['path'])[-1]
-        subDir = os.listdir(self.collection['path'])                        #Obtiene los subdirectorios
+        try:
+            subDir = os.listdir(self.collection['path'])                        #Obtiene los subdirectorios
+        except:
+            sys.exit('El directorio de la colección no fue encontrado.')
         average = 0
         for dir in subDir:
-            fileNames = os.listdir(self.collection['path'] + '\\' + dir)    #Rutas de los archivos de una subcarpeta
-            self.collection['totalDocs'] += len(fileNames)                  #Suma al total de archivos
+            try:
+                fileNames = os.listdir(self.collection['path'] + '\\' + dir)    #Rutas de los archivos de una subcarpeta
+            except:
+                continue
+            self.collection['totalDocs'] += len(fileNames)                      #Suma al total de archivos
             for fileName in fileNames:
                 match = re.search(r'\w\w*.txt', fileName)
                 if match:
@@ -176,13 +188,13 @@ class Indexer(Tools):
                          'VOCABULARIO': self.vocabulary}
 
         for doc in docsToWrite:
-            file = open('..\\Index\\' + self.prefix + '_' + doc[:2] + '.json', 'w')
+            file = open('Index\\' + self.prefix + '_' + doc[:2] + '.json', 'w')
             json = js.dumps({doc: docsToWrite[doc]})
             file.write(json)
             file.close()
 
         #Agregar stopwords al indexado
-        file = open('..\\Index\\' + self.prefix + '_SW' + '.json', 'w')
+        file = open('Index\\' + self.prefix + '_SW' + '.json', 'w')
         json = js.dumps({'STOPWORDS': self.stopwords})
         file.write(json)
         file.close()

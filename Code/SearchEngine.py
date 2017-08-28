@@ -1,5 +1,5 @@
 from Code.Tools import *
-import json as js, re, math
+import json as js, re, math, sys
 
 
 class SearchEngine(Tools):
@@ -13,9 +13,11 @@ class SearchEngine(Tools):
 
     def ReadIndexFiles(self):
 
-        path = '..\\Index\\' + self.prefix
-
-        file = open(path + '_CO.json', 'r')
+        path = 'Index\\' + self.prefix
+        try:
+            file = open(path + '_CO.json', 'r')
+        except:
+            sys.exit('No existen archivos de indexación con ese prefijo.')
         self.collection = js.loads(list(file)[0])['COLECCION']
         file.close()
 
@@ -78,10 +80,12 @@ class SearchEngine(Tools):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def VectorSearch(self, query, prefix, outputName):
+    def VectorSearch(self, query, prefix, outputName, rankStart = 0, rankEnd = 50):
         self.prefix = prefix
         self.ReadIndexFiles()
-        self.ProcessQuery(query)  # Quitar stopwords, acentos y sacar pesos
+        self.queryFrequencies = {'totalTerms': 0, 'terms': {}}
+        self.queryWeights = {}
+        self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
         self.Weights()
         ranking = {}
 
@@ -100,12 +104,14 @@ class SearchEngine(Tools):
 
         ranking, sortedValues = self.SortDictionary(ranking, 1, True)
 
-        self.GenerateHTML(ranking, outputName)
+        self.GenerateHTML(ranking, outputName, query, rankStart, rankEnd)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def BM25Search(self, query, prefix, outputName, k = 1.5, b = 1):
+    def BM25Search(self, query, prefix, outputName, rankStart = 0, rankEnd = 50, k = 1.5, b = 1):
         self.prefix = prefix
+        self.queryFrequencies = {'totalTerms': 0, 'terms': {}}
+        self.queryWeights = {}
         self.ReadIndexFiles()
         self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
         N = self.collection['totalDocs']
@@ -126,11 +132,11 @@ class SearchEngine(Tools):
             ranking[ID] = sim
         ranking, sortedValues = self.SortDictionary(ranking, 1, True)
 
-        self.GenerateHTML(ranking,outputName)
+        self.GenerateHTML(ranking,outputName, query, rankStart, rankEnd)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def GenerateHTML(self, ranking, outputName):
+    def GenerateHTML(self, ranking, outputName, query, rankStart, rankEnd):
 
 
         topHTML = '''<html><head>
@@ -168,10 +174,11 @@ class SearchEngine(Tools):
               <th>Descripción</th>
           </tr>
         '''
-        pos = 1
+        pos = 0
 
         for ranked in ranking:
-            if ranking[ranked] > 0:
+            pos += 1
+            if ranking[ranked] > 0 and (rankStart <= pos <= rankEnd):
                 docPath = self.documents[ranked]['path']
                 fileSize = os.stat(docPath).st_size
                 creationDate = time.ctime(os.path.getctime(docPath))
@@ -199,14 +206,13 @@ class SearchEngine(Tools):
                         <td> <center>''' + descripcion + '''</center> </td>
                     </tr>
                 '''
-                pos += 1
             else:
                 break
         topHTML += '''
         </table> </body> </html>        
         '''
 
-        file = open('..\\Search Results\\' + outputName + '.html', 'w')
+        file = open('Search Results\\' + outputName + '.html', 'w')
         file.write(topHTML)
         file.close()
 
