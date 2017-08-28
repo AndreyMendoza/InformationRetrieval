@@ -4,11 +4,8 @@ import json as js, re, math
 
 class SearchEngine(Tools):
 
-    def __init__(self, prefix, outputName):
-
-        self.prefix = prefix
-        self.outputName = outputName
-        self.ReadIndexFiles()
+    def __init__(self):
+        self.prefix = ""
         self.queryFrequencies = {'totalTerms': 0, 'terms':{}}
         self.queryWeights = {}
 
@@ -81,7 +78,9 @@ class SearchEngine(Tools):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def VectorSearch(self, query):
+    def VectorSearch(self, query, prefix, outputName):
+        self.prefix = prefix
+        self.ReadIndexFiles()
         self.ProcessQuery(query)  # Quitar stopwords, acentos y sacar pesos
         self.Weights()
         ranking = {}
@@ -100,11 +99,14 @@ class SearchEngine(Tools):
             ranking[ID] = sim
 
         ranking, sortedValues = self.SortDictionary(ranking, 1, True)
-        return ranking, sortedValues
+
+        self.GenerateHTML(ranking, outputName)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def BM25Search(self, query, k = 1.5, b = 1):
+    def BM25Search(self, query, prefix, outputName, k = 1.5, b = 1):
+        self.prefix = prefix
+        self.ReadIndexFiles()
         self.ProcessQuery(query)                                    # Quitar stopwords, acentos y sacar pesos
         N = self.collection['totalDocs']
         average = self.collection['average'] / N
@@ -123,7 +125,8 @@ class SearchEngine(Tools):
                     continue
             ranking[ID] = sim
         ranking, sortedValues = self.SortDictionary(ranking, 1, True)
-        return ranking, sortedValues
+
+        self.GenerateHTML(ranking,outputName)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -206,4 +209,5 @@ class SearchEngine(Tools):
         file = open('..\\Search Results\\' + outputName + '.html', 'w')
         file.write(topHTML)
         file.close()
+
 

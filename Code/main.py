@@ -17,9 +17,12 @@ a = Indexer()
 #print(list(a.frequencies[1]['terms']))
 
 
-s = SearchEngine('tests', 'testResults')
-res, values = s.BM25Search('compresión de archivos y manejo de archivos comprimidos.')
-s.GenerateHTML(res, 'BM25')
+s = SearchEngine()
+
+#Solo se instancia la clase, llama al tipo de busqueda y le pasa la consulta, el prefix y el outputName
+
+s.BM25Search('compresión de archivos y manejo de archivos comprimidos.', 'tests', 'bmtest')
+s.VectorSearch('compresión de archivos y manejo de archivos comprimidos.', 'tests', 'vectortest')
 
 
 print('Finalizado!\nDuracion: ', time.clock() - start)
