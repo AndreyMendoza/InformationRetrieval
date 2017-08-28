@@ -163,7 +163,7 @@ class SearchEngine(Tools):
                 background-color: #dddddd;
             }
             </style>
-            <h1><center> ESCALAFÓN  </center></h1></head><body>
+            <h1><center> Escalafón de la consulta: "'''+query+'''"</center></h1></head><body>
             <table style="width:100%">
             <tr>
               <th>Posición</th>
