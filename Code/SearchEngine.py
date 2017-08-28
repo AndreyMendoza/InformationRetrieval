@@ -193,7 +193,7 @@ class SearchEngine(Tools):
                     <tr>
                         <td> <center> ''' + str(pos) + '''</center> </td>      
                         <td> <center> ''' + docPath + '''</center> </td>
-                        <td> <center>''' + str(fileSize) + '''</center> </td>
+                        <td> <center>''' + str(fileSize) + '''B</center> </td>
                         <td> <center>''' + creationDate + '''</center> </td>
                         <td> <center>''' + str(ranking[ranked]) + '''</center> </td>
                         <td> <center>''' + descripcion + '''</center> </td>

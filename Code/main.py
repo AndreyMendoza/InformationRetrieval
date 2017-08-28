@@ -8,7 +8,7 @@ Ejecución del programa
 
 start = time.clock()
 
-a = Indexer()
+# a = Indexer()
 # a.Run()
 
 
