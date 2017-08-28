@@ -144,6 +144,12 @@ class SearchEngine(Tools):
                 padding: 8px;
             }
             
+            th {
+                background-color: #4CAF50;
+                color: white;
+                text-align: center;
+            }
+            
             tr:nth-child(even) {
                 background-color: #dddddd;
             }
