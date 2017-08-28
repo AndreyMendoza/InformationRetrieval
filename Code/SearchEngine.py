@@ -129,9 +129,28 @@ class SearchEngine(Tools):
 
     def GenerateHTML(self, ranking, outputName):
 
-        topHTML = '''<html><head><h1><center> Escalafón  </center></h1></head><body>
-         <table style="width:100%">
-          <tr>
+
+        topHTML = '''<html><head>
+            <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+            
+            tr:nth-child(even) {
+                background-color: #dddddd;
+            }
+            </style>
+            <h1><center> ESCALAFON  </center></h1></head><body>
+            <table style="width:100%">
+            <tr>
               <th>Posición</th>
               <th>Ruta del Archivo</th>
               <th>Tamaño</th>
@@ -147,7 +166,19 @@ class SearchEngine(Tools):
                 docPath = self.documents[ranked]['path']
                 fileSize = os.stat(docPath).st_size
                 creationDate = time.ctime(os.path.getctime(docPath))
-                descripcion = 'Montero mamon'
+                # -------------------------------------------------------------
+                file = open(docPath,'r')
+                regex = r'DESCRIPCIÓN[\s\w\W]{200}'
+                comp = 'DESCRIPCIÓN|\s+'
+                text = file.read()
+                text = re.search(regex, text)
+                if text is not None:
+                    text = re.sub(comp, r' ', text.group(), 0)
+                    descripcion = text + '[...]'
+                else:
+                    descripcion = "Sin descripción"
+
+                file.close()
 
                 topHTML += '''
                     <tr>
