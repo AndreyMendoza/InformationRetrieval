@@ -132,7 +132,7 @@ class SearchEngine(Tools):
 
         topHTML = '''<html><head>
             <style>
-            table {
+            table, h1{
                 font-family: arial, sans-serif;
                 border-collapse: collapse;
                 width: 100%;
@@ -148,7 +148,7 @@ class SearchEngine(Tools):
                 background-color: #dddddd;
             }
             </style>
-            <h1><center> ESCALAFON  </center></h1></head><body>
+            <h1><center> ESCALAFÓN  </center></h1></head><body>
             <table style="width:100%">
             <tr>
               <th>Posición</th>
