@@ -95,7 +95,7 @@ class Indexer(Tools):
         self.frequencies[ID] = {'totalTerms': 0, 'terms':{}, 'long':0}  # Terms contiene todas las palabras con sus frecuencias
 
         complement = r'\.{2,}'
-        regex = r'\w[\w.]*[\w]­?|\w'                                    # Regex para validar el texto valido
+        regex = r'\w[\w.]*[\w]­?|\w'                                    # Regex para validar el texto que se va a utilizar.
         long = 0
         specialChar = ''
 

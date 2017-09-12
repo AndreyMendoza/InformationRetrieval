@@ -1,4 +1,4 @@
-import unicodedata, operator, time, os
+import unicodedata, operator, time, os, re
 
 class Tools:
 
@@ -12,10 +12,9 @@ class Tools:
         :return: palabra con los acentos eliminados
         '''
 
-        pos = word.find('ñ')
+        word = re.sub(r'ñ', r'<n>', word, 0)              # Sustituir la ñ por <n>
         result = "".join(c for c in unicodedata.normalize('NFD', word) if unicodedata.category(c) != 'Mn')
-        if pos != -1:
-            result = result[:pos] + 'ñ' + result[pos + 1:]
+        result = re.sub(r'<n>', r'ñ', word, 0)            # Sustituir <n> por ñ
         return result
 
 #-----------------------------------------------------------------------------------------------------------------------
